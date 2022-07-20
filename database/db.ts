@@ -7,20 +7,20 @@ import mongoose from 'mongoose'
  * 3 = disconnecting
  * 99 = unitialized
  */
-const mongooConnection = {
+const mongoConnection = {
 	isConnected: mongoose.ConnectionStates.disconnected,
 }
 
 export const connect = async () => {
-	if (mongooConnection.isConnected) {
+	if (mongoConnection.isConnected) {
 		console.log('Already DB connected')
 		return
 	}
 
 	if (mongoose.connections.length > 0) {
-		mongooConnection.isConnected = mongoose.connections[0].readyState
+		mongoConnection.isConnected = mongoose.connections[0].readyState
 
-		if (mongooConnection.isConnected === mongoose.ConnectionStates.connected) {
+		if (mongoConnection.isConnected === mongoose.ConnectionStates.connected) {
 			console.log('Using current connection')
 			return
 		}
@@ -29,16 +29,17 @@ export const connect = async () => {
 	}
 
 	await mongoose.connect(process.env.MONGO_URL || '')
-	mongooConnection.isConnected = mongoose.ConnectionStates.connected
+	mongoConnection.isConnected = mongoose.ConnectionStates.connected
 	console.log('Connect to DB: ', process.env.MONGO_URL)
 }
 
 export const disconnect = async () => {
 	if (process.env.NODE_ENV === 'development') return
 
-	if (mongooConnection.isConnected === mongoose.ConnectionStates.disconnected)
+	if (mongoConnection.isConnected === mongoose.ConnectionStates.disconnected)
 		return
 
 	await mongoose.disconnect()
+	mongoConnection.isConnected = mongoose.ConnectionStates.disconnected
 	console.log('Disconnect from DB')
 }

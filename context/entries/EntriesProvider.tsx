@@ -2,6 +2,7 @@ import { FC, useEffect, useReducer } from 'react'
 import { Entry } from '../../interfaces'
 import { EntriesContext, entriesReducer } from './'
 import entriesApi from '../../api/entriesApi';
+import { useSnackbar } from 'notistack';
 
 export type EntriesState = {
   entries: Entry[]
@@ -17,6 +18,7 @@ type Props = {
 
 export const EntriesProvider:FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE)
+  const { enqueueSnackbar } = useSnackbar()
 
   const addEntry = async (description: string) => {
     try {
@@ -28,10 +30,20 @@ export const EntriesProvider:FC<Props> = ({ children }) => {
     }
   }
 
-  const updateEntry = async ({_id, description, status}: Entry) => {
+  const updateEntry = async ({_id, description, status}: Entry, showSnackbar = false) => {
     try {
       const { data  } = await entriesApi.put<Entry>(`/entries/${_id}`, { description, status })
       dispatch({ type: '[Entries] - Update Entry', payload: data})
+      if (showSnackbar) {
+        enqueueSnackbar('Transaction Success', {
+          variant: 'success',
+          autoHideDuration: 1500,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right'
+          }
+        })
+      }
     } catch(error) {
       console.log(error)
     } 
