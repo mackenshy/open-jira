@@ -8,6 +8,7 @@ import { Entry, EntryStatus } from '../../interfaces/entry';
 import { dbEntries } from '../../database';
 import { EntriesContext } from '../../context/entries/EntriesContext';
 import { getFormatDistanceToNow } from '../../lib';
+import { useRouter } from 'next/router';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -20,7 +21,9 @@ const EntryPage:FC<Props> = ({ entry })=> {
   const [status, setStatus] = useState<EntryStatus>(entry.status)
   const [touched, setTouched] = useState(false)
 
-  const { updateEntry } = useContext(EntriesContext)
+  const { updateEntry, deleteEntry } = useContext(EntriesContext)
+
+  const router = useRouter()
 
   const isNotValid = useMemo(() => (
     inputValue.length <= 0 && touched
@@ -44,6 +47,11 @@ const EntryPage:FC<Props> = ({ entry })=> {
     }
 
     updateEntry(updatedEntry, true)
+  }
+
+  const onDelete = () => {
+    deleteEntry(entry)
+    router.push('/')
   }
 
   return (
@@ -107,12 +115,14 @@ const EntryPage:FC<Props> = ({ entry })=> {
       </Grid>
     </Grid>
 
-    <IconButton sx={{
+    <IconButton 
+      sx={{
         position: 'fixed',
         bottom: 30,
         right: 30,
         backgroundColor: 'error.dark'
       }}
+      onClick={onDelete}
     >
       <DeleteOutlinedIcon />
     </IconButton>
