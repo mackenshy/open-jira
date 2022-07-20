@@ -10,3 +10,12 @@ MongoDB URL local:
 ```
 mongodb://localhost:27017/entriesdb
 ```
+
+
+## Seed database
+```
+http://localhost:3000/api/seed
+```
+
+## Set envs
+MONGO_URL=
