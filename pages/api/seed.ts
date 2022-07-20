@@ -16,6 +16,10 @@ export default async function handler(
 			.json({ message: 'You can not access to this endpoint on Production' })
 	}
 
+	if (req.method !== 'POST') {
+		return res.status(400).json({ message: 'Invalid request' })
+	}
+
 	await db.connect()
 	await Entry.deleteMany()
 	await Entry.insertMany(seedData.entries)
